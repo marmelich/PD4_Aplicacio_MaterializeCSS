@@ -9,10 +9,11 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <link href="css/materialize.css" rel="stylesheet" />
     <link href="css/index.css" rel="stylesheet" media="screen,projection" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
 </head>
 
 <body>
-
     <ul id="slide-out" class="sidenav">
         <li>
             <div class="user-view">
@@ -32,12 +33,12 @@
         <li><a class="subheader">Subheader</a></li>
         <li><a class="waves-effect" href="#!">Third Link With Waves</a></li>
     </ul>
-    <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a> 
+    <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
 
 
     <ul id="tabs-swipe-demo" class="tabs">
-        <li class="tab col s3"><a href="#test-swipe-1">Test 1</a></li>
-        <li class="tab col s3"><a class="active" href="#test-swipe-2">Test 2</a></li>
+        <li class="tab col s3"><a class="active" href="#test-swipe-1">Test 1</a></li>
+        <li class="tab col s3"><a href="#test-swipe-2">Test 2</a></li>
         <li class="tab col s3"><a href="#test-swipe-3">Test 3</a></li>
     </ul>
     <div id="test-swipe-1" class="col s12 blue">Test 1</div>
@@ -46,9 +47,73 @@
 
 
 
-    <script src="cordova.js"></script>
-    <script src="js/materialize.js"></script>
-    <script src="js/index.js"></script>
+    <script>
+addEventListener("DOMContentLoaded", (event) => {
+
+    var tabs = M.Tabs.init(document.querySelector('.tabs'));
+
+    // Petición AJAX
+    $.ajax({
+        method: "GET",
+        url: "https://api.openbrewerydb.org/v1/breweries", // URL de la API
+        dataType: "json"
+    }).done(function (response) {
+        // Mostramos los nombres en Tab 1
+        const tab1 = $("#test-swipe-1");
+        tab1.empty(); // Limpiamos el contenedor
+
+        response.forEach(function (brewery, index) {
+            // Creamos un botón o enlace con el nombre de cada brewery
+            tab1.append(`
+                <p>
+                    <a href="#!" class="brewery-link white-text pl-4" data-index="${index}";">
+                        ${brewery.name}
+                    </a>
+                </p>
+            `);
+        });
+
+        
+
+        // Evento al hacer clic en un nombre
+        $(".brewery-link").on("click", function () {
+            const index = $(this).data("index"); // Obtenemos el índice del elemento clicado
+            const brewery = response[index]; // Accedemos a los datos correspondientes
+
+            // Llenamos Tab 2 con la información completa
+            $("#test-swipe-2").html(`
+                <div id="brewery-info" class="pl-4">
+                    <h4>${brewery.name}</h4>
+                    <p><strong>Ciudad:</strong> ${brewery.city}</p>
+                    <p><strong>Tipo:</strong> ${brewery.brewery_type}</p>
+                    <p><strong>Dirección:</strong> ${brewery.address_1 || "No disponible"}</p>
+                    <p><strong>Estado:</strong> ${brewery.state_province}</p>
+                    <p><strong>Código Postal:</strong> ${brewery.postal_code}</p>
+                    <p><strong>País:</strong> ${brewery.country}</p>
+                    <p><strong>Teléfono:</strong> ${brewery.phone || "No disponible"}</p>
+                    <p><strong>Web:</strong> 
+                        <a href="${brewery.website_url}" target="_blank">
+                            ${brewery.website_url || "No disponible"}
+                        </a>
+                    </p>
+                </div>
+            `);
+
+            // Cambiamos a Tab 2
+            var instance = M.Tabs.getInstance(document.querySelector('.tabs'));
+            instance.select('test-swipe-2');
+        });
+
+    }).fail(function () {
+        alert("ERROR al obtener los datos.");
+    });
+});
+    </script>
+
+
+<script src="cordova.js"></script>
+<script src="js/materialize.js"></script>
+<script src="js/index.js"></script>
 
 </body>
 
