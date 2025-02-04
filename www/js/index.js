@@ -2,31 +2,24 @@ document.addEventListener('deviceready', onDeviceReady, false);
 
 function onDeviceReady() {
     // // Cordova is now initialized. Have fun!
-
-    // console.log('Running cordova-' + cordova.platformId + '@' + cordova.version);
-    // document.getElementById('deviceready').classList.add('ready');
     document.getElementById("btnCapture").addEventListener("click", function () {
     navigator.camera.getPicture(onSuccess, onFail, {
         quality: 50, // Calidad de la imagen (0-100)
-        destinationType: Camera.DestinationType.DATA_URL, // Devuelve Base64
-        sourceType: Camera.PictureSourceType.CAMERA // Captura desde la cámara
+        destinationType: Camera.DestinationType.DATA_URL, //devuelve Base64
+        sourceType: Camera.PictureSourceType.CAMERA //captura desde la cam
     });
 
     function onSuccess(imageData) {
-        // imageData contiene el string Base64 de la imagen
         var base64Image = imageData;
         console.log(base64Image);
 
-        // Guarda en localStorage
-        localStorage.setItem("savedImage", base64Image);
+        localStorage.setItem("savedImage", base64Image); //guardar en localStorage
 
-        // Muestra la imagen guardada
+        //mostrar imagen
         var image = document.getElementById("image");
         image.src = base64Image;
         image.style.display = "block";
-        document.getElementById("userPhoto").src = base64Image;
-
-        alert("Imagen guardada en localStorage");
+        document.getElementById("userPhoto").src = base64Image; //ponerla de user photo
     }
 
     function onFail(message) {

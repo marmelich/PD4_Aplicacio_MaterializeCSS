@@ -20,7 +20,7 @@
                 <div class="background">
                     <img src="img/nubes.jpeg">
                 </div>
-                <a href="#user"><img class="circle" src="img/anniethecat.png"></a>
+                <a href="#user"><img id="userPhoto" class="circle" src="img/anniethecat.png"></a>
                 <a href="#name"><span class="white-text name">John Doe</span></a>
                 <a href="#email"><span class="white-text email">jdoe@example.com</span></a>
             </div>
@@ -51,72 +51,69 @@
 
 
     <script>
-addEventListener("DOMContentLoaded", (event) => {
+        addEventListener("DOMContentLoaded", (event) => {
 
-    var tabs = M.Tabs.init(document.querySelector('.tabs'));
+            var tabs = M.Tabs.init(document.querySelector('.tabs'));
 
-    // Petición AJAX
-    $.ajax({
-        method: "GET",
-        url: "https://api.openbrewerydb.org/v1/breweries", // URL de la API
-        dataType: "json"
-    }).done(function (response) {
-        // Mostramos los nombres en Tab 1
-        const tab1 = $("#test-swipe-1");
-        tab1.empty(); // Limpiamos el contenedor
+            $.ajax({
+                method: "GET",
+                url: "https://api.openbrewerydb.org/v1/breweries", //url de la api
+                dataType: "json"
+            }).done(function (response) {
+                //mostramos nombres en tab1
+                const tab1 = $("#test-swipe-1");
+                tab1.empty(); //limpiamos contenedor
 
-        response.forEach(function (brewery, index) {
-            // Creamos un botón o enlace con el nombre de cada brewery
-            tab1.append(`
+                response.forEach(function (brewery, index) {
+                    //creamos enlace a cada brewery
+                    tab1.append(`
                 <p>
                     <a href="#!" class="brewery-link white-text pl-4" data-index="${index}";">
                         ${brewery.name}
                     </a>
                 </p>
             `);
+                });
+
+                //evento click en brewery
+                $(".brewery-link").on("click", function () {
+                    const index = $(this).data("index"); //index del elemento
+                    const brewery = response[index]; //sus datos
+
+                    //llenamos tab con la info completa
+                    $("#test-swipe-2").html(`
+                        <div id="brewery-info" class="pl-4">
+                            <h4>${brewery.name}</h4>
+                            <p><strong>Ciudad:</strong> ${brewery.city}</p>
+                            <p><strong>Tipo:</strong> ${brewery.brewery_type}</p>
+                            <p><strong>Dirección:</strong> ${brewery.address_1 || "No disponible"}</p>
+                            <p><strong>Estado:</strong> ${brewery.state_province}</p>
+                            <p><strong>Código Postal:</strong> ${brewery.postal_code}</p>
+                            <p><strong>País:</strong> ${brewery.country}</p>
+                            <p><strong>Teléfono:</strong> ${brewery.phone || "No disponible"}</p>
+                            <p><strong>Web:</strong> 
+                                <a href="${brewery.website_url}" target="_blank">
+                                    ${brewery.website_url || "No disponible"}
+                                </a>
+                            </p>
+                        </div>
+                    `);
+
+                    //cambiamos a tab2
+                    var instance = M.Tabs.getInstance(document.querySelector('.tabs'));
+                    instance.select('test-swipe-2');
+                });
+
+            }).fail(function () {
+                alert("ERROR al obtener los datos.");
+            });
         });
-
-        
-
-        // Evento al hacer clic en un nombre
-        $(".brewery-link").on("click", function () {
-            const index = $(this).data("index"); // Obtenemos el índice del elemento clicado
-            const brewery = response[index]; // Accedemos a los datos correspondientes
-
-            // Llenamos Tab 2 con la información completa
-            $("#test-swipe-2").html(`
-                <div id="brewery-info" class="pl-4">
-                    <h4>${brewery.name}</h4>
-                    <p><strong>Ciudad:</strong> ${brewery.city}</p>
-                    <p><strong>Tipo:</strong> ${brewery.brewery_type}</p>
-                    <p><strong>Dirección:</strong> ${brewery.address_1 || "No disponible"}</p>
-                    <p><strong>Estado:</strong> ${brewery.state_province}</p>
-                    <p><strong>Código Postal:</strong> ${brewery.postal_code}</p>
-                    <p><strong>País:</strong> ${brewery.country}</p>
-                    <p><strong>Teléfono:</strong> ${brewery.phone || "No disponible"}</p>
-                    <p><strong>Web:</strong> 
-                        <a href="${brewery.website_url}" target="_blank">
-                            ${brewery.website_url || "No disponible"}
-                        </a>
-                    </p>
-                </div>
-            `);
-
-            // Cambiamos a Tab 2
-            var instance = M.Tabs.getInstance(document.querySelector('.tabs'));
-            instance.select('test-swipe-2');
-        });
-
-    }).fail(function () {
-        alert("ERROR al obtener los datos.");
-    });
-});
     </script>
 
 
-<script src="cordova.js"></script>
-<script src="js/materialize.js"></script>
-<script src="js/index.js"></script>
+    <script src="cordova.js"></script>
+    <script src="js/materialize.js"></script>
+    <script src="js/index.js"></script>
 
 </body>
 
